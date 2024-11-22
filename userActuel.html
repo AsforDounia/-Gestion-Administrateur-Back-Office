@@ -175,15 +175,211 @@
                         <path d="M154.643 70.5882V73.0882H157.143H171.429C186.282 73.0882 197.5 82.943 197.5 94.1176V176.471C197.5 187.645 186.282 197.5 171.429 197.5H28.5714C13.7181 197.5 2.5 187.645 2.5 176.471V94.1176C2.5 82.943 13.7181 73.0882 28.5714 73.0882H42.8571H45.3571V70.5882V47.0588C45.3571 22.9302 69.3909 2.5 100 2.5C130.609 2.5 154.643 22.9302 154.643 47.0588V70.5882ZM128.571 84.8529H131.071V82.3529V47.0588C131.071 32.257 116.661 21.0294 100 21.0294C83.339 21.0294 68.9286 32.257 68.9286 47.0588V82.3529V84.8529H71.4286H128.571ZM85.2787 165.674C89.2512 168.945 94.5516 170.724 100 170.724C105.448 170.724 110.749 168.945 114.721 165.674C118.707 162.391 121.071 157.823 121.071 152.929C121.071 148.036 118.707 143.468 114.721 140.185C110.749 136.914 105.448 135.135 100 135.135C94.5516 135.135 89.2512 136.914 85.2787 140.185C81.2925 143.468 78.9286 148.036 78.9286 152.929C78.9286 157.823 81.2925 162.391 85.2787 165.674Z" fill="black" fill-opacity="0.25" stroke="#849EFF" stroke-width="5"/>
                     </svg>
                     <h1 class="text-white text-4xl opacity-25 font-bold">Compréhension</h1>
-                </div>				
+                </div>
             </div>
         </div>
+    </section>
+    <section id="quiz" class="hidden bg-gray-50 min-h-screen">
+        <!-- Le contenu sera injecté ici par displayQuestions() -->
+    </section>
+    <script src="js/script.js"></script>
+    <script>
+    // Fonction pour démarrer le quiz quand une catégorie est sélectionnée
+    function satrtQuizzLevel(level, category) {
+        // Masquer la section des niveaux
+        document.getElementById('userSection').classList.add('hidden');
+        
+        // Afficher la section du quiz
+        const quizSection = document.getElementById('quiz');
+        quizSection.classList.remove('hidden');
+        
+        // Récupérer les questions depuis le localStorage
+        const questions = getQuestions(level, category);
+        
+        // Afficher les questions
+        displayQuestions(questions, quizSection, level, category);
+    }
 
-</section>
-<section id="quiz" class="hidden">
-    <h1 class="text-[#D49286] text-5xl font-bold">The Quiz Section</h1>
-</section>
-<script src="js/script.js"></script>
+    // Fonction pour récupérer les questions du niveau et de la catégorie sélectionnés
+    function getQuestions(level, category) {
+        const savedQuestions = JSON.parse(localStorage.getItem('quizQuestions'));
+        const levelQuestions = savedQuestions.find(q => q.level === level);
+        
+        if (levelQuestions && levelQuestions.categories[category]) {
+            return levelQuestions.categories[category];
+        }
+        return [];
+    }
 
+    // Fonction pour afficher les questions
+    function displayQuestions(questions, container, level, category) {
+        let currentQuestion = 0;
+        let userAnswers = [];
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            container.innerHTML = `
+                <div class="p-8 max-w-3xl mx-auto">
+                    <div class="flex justify-between items-center mb-8">
+                        <h1 class="text-[#D49286] text-5xl font-bold">Quiz</h1>
+                        <button onclick="returnToLevels()" class="bg-[#143095] text-white px-6 py-2 rounded-lg">
+                            Retour
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-lg p-8 shadow-lg">
+                        <div class="flex justify-between items-center mb-6">
+                            <p class="text-gray-500">Question ${currentQuestion + 1} of ${questions.length}</p>
+                            <button class="text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M13 9h-2V7h2m0 10h-2v-6h2m-1-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-6">${q.question}</h3>
+                        <div class="space-y-4">
+                            ${q.options.map(option => `
+                                <div class="w-full">
+                                    <input type="radio" id="option_${option}" name="question" value="${option}" 
+                                           class="hidden peer">
+                                    <label for="option_${option}" 
+                                           class="block w-full p-4 text-gray-800 border rounded-lg cursor-pointer
+                                                  peer-checked:bg-[#D49286] peer-checked:text-white 
+                                                  hover:bg-gray-50 transition-colors">
+                                        ${option}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex justify-center mt-8">
+                            <button onclick="submitAnswer()" 
+                                    class="bg-[#D49286] text-white px-8 py-3 rounded-lg w-full
+                                           hover:bg-[#c27b6e] transition-colors">
+                                Submit Answer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Afficher la première question
+        showQuestion();
+
+        // Fonction pour soumettre la réponse
+        window.submitAnswer = function() {
+            const selectedOption = document.querySelector('input[name="question"]:checked');
+            if (!selectedOption) {
+                alert('Veuillez sélectionner une réponse');
+                return;
+            }
+
+            // Sauvegarder la réponse
+            userAnswers.push(selectedOption.value);
+            
+            // Passer à la question suivante
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                // Vérifier si toutes les réponses sont correctes
+                if (checkAllAnswersCorrect(userAnswers, questions)) {
+                    // Débloquer la catégorie suivante
+                    unlockNextCategory(level, category);
+                    
+                    // Sauvegarder la progression
+                    saveProgress(level, category);
+                    
+                    container.innerHTML = `
+                        <div class="p-8 max-w-3xl mx-auto text-center">
+                            <h2 class="text-2xl font-bold mb-4">Félicitations ! Vous avez débloqué la catégorie suivante !</h2>
+                            <button onclick="returnToLevels()" 
+                                    class="bg-[#143095] text-white px-6 py-2 rounded-lg">
+                                Retour aux niveaux
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="p-8 max-w-3xl mx-auto text-center">
+                            <h2 class="text-2xl font-bold mb-4">Essayez encore ! Toutes les réponses doivent être correctes.</h2>
+                            <button onclick="returnToLevels()" 
+                                    class="bg-[#143095] text-white px-6 py-2 rounded-lg">
+                                Retour aux niveaux
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        };
+    }
+
+    // Fonction pour retourner à la page des niveaux
+    function returnToLevels() {
+        document.getElementById('userSection').classList.remove('hidden');
+        document.getElementById('quiz').classList.add('hidden');
+    }
+
+    // Fonction pour vérifier si toutes les réponses sont correctes
+    function checkAllAnswersCorrect(userAnswers, questions) {
+        return userAnswers.every((answer, index) => answer === questions[index].answer);
+    }
+
+    // Fonction pour débloquer la catégorie suivante
+    function unlockNextCategory(level, currentCategory) {
+        const categories = {
+            'grammaire': 'vocabulaire',
+            'vocabulaire': 'comprehension'
+        };
+
+        const nextCategory = categories[currentCategory];
+        if (nextCategory) {
+            const nextElement = document.getElementById(`${level}_${nextCategory}`);
+            if (nextElement) {
+                nextElement.classList.remove('opacity-50', 'pointer-events-none');
+            }
+        }
+    }
+
+    // Fonction pour sauvegarder la progression
+    function saveProgress(level, category) {
+        const progress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+        if (!progress[level]) {
+            progress[level] = {};
+        }
+        progress[level][category] = true;
+        localStorage.setItem('userProgress', JSON.stringify(progress));
+    }
+
+    // Initialisation : activer le premier niveau (A1)
+    document.addEventListener('DOMContentLoaded', () => {
+        // Récupérer le nom d'utilisateur du localStorage
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.username) {
+            document.getElementById('theUserName').textContent = user.username;
+        }
+        
+        // Récupérer la progression
+        const progress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+        
+        // Activer le niveau A1 grammaire par défaut
+        document.getElementById('A1_grammaire').classList.remove('opacity-50', 'pointer-events-none');
+        
+        // Activer les catégories déjà complétées
+        if (progress.A1) {
+            Object.keys(progress.A1).forEach(category => {
+                const nextCategory = category === 'grammaire' ? 'vocabulaire' : 
+                                   category === 'vocabulaire' ? 'comprehension' : null;
+                if (nextCategory) {
+                    const element = document.getElementById(`A1_${nextCategory}`);
+                    if (element) {
+                        element.classList.remove('opacity-50', 'pointer-events-none');
+                    }
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>
+
