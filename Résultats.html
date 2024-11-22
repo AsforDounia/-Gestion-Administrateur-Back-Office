@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>Tableau de Bord - Résultats</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="tailwinsScript/script.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+	
+	
+
+	<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+	<title>Document</title>
 </head>
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
-        <!-- Sidebar -->
         <aside class="w-64 bg-[#143095] text-white">
             <div class="p-4 text-lg font-semibold text-center">Admin Dashboard</div>
             <nav class="mt-5">
                 <ul>
                     <li>
-                        <a href="admin.html" class="flex items-center p-4 hover:bg-gray-700">
-                            <span class="material-icons">dashboard</span>
-                            <span class="ml-2">Dashboard</span>
-                        </a>
+                        <li>
+                            <a href="admin.html" class="flex items-center p-4   hover:bg-gray-700">
+                                <span class="material-icons">dashboard</span>
+                                <span class="ml-2">Dashboard</span>
+                                
+                            </a>
+                        </li>
+                     
+                        </a></li>
                     </li>
                     <li>
                         <a href="Résultats.html" class="flex items-center p-4 bg-gray-700">
@@ -42,19 +51,17 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-6">
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold mb-6">Suivi des Utilisateurs</h2>
-                
-                <!-- Filters -->
-                <div class="flex space-x-4 mb-6">
-                    <input type="text" id="searchUser" 
-                           placeholder="Rechercher un utilisateur..." 
-                           class="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    
-                    <select id="levelFilter" 
-                            class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="flex-1">
+
+            <div class="container mx-auto p-4">
+                <div class="mb-6 flex gap-4">
+                    <select id="nameFilter" class="border p-2 rounded">
+                        <option value="all">Tous les utilisateurs</option>
+                        <option value="fouad">Fouad</option>
+                        <option value="ahmed">Ahmed</option>
+                    </select>
+        
+                    <select id="levelFilter" class="border p-2 rounded">
                         <option value="all">Tous les niveaux</option>
                         <option value="A1">A1</option>
                         <option value="A2">A2</option>
@@ -64,222 +71,33 @@
                         <option value="C2">C2</option>
                     </select>
                 </div>
-
-                <!-- Statistics -->
-                <div class="grid grid-cols-3 gap-4 mb-6">
-                    <div class="bg-white rounded-lg p-4 shadow">
-                        <h3 class="text-gray-500 text-sm">Total Utilisateurs</h3>
-                        <p id="totalUsers" class="text-2xl font-bold">0</p>
-                    </div>
-                    <div class="bg-white rounded-lg p-4 shadow">
-                        <h3 class="text-gray-500 text-sm">Moyenne des scores</h3>
-                        <p id="averageScore" class="text-2xl font-bold">0%</p>
-                    </div>
-                    <div class="bg-white rounded-lg p-4 shadow">
-                        <h3 class="text-gray-500 text-sm">Niveau le plus atteint</h3>
-                        <p id="topLevel" class="text-2xl font-bold">-</p>
-                    </div>
-                </div>
-
-                <!-- Users Table -->
-                <div class="bg-white rounded-lg shadow overflow-hidden">
-                    <table class="min-w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Utilisateur
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Niveau Actuel
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Score Global
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="scoreTable" class="bg-white divide-y divide-gray-200">
-                            <!-- Dynamic content will go here -->
-                        </tbody>
-                    </table>
-                </div>
+        
+                <table class="min-w-full bg-white shadow-md rounded">
+                    <thead>
+                        <tr class="bg-gray-100 border-b">
+                            <th class="p-2 text-left">Niveau</th>
+                            <th class="p-2 text-left">Tentatives</th>
+                            <th class="p-2 text-left">Progression</th>
+                            <th class="p-2 text-left">Taux de réussite</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsTableBody">
+                    </tbody>
+                </table>
             </div>
-        </div>
+        
+            <script src="statistique.js"></script>
     </div>
 
-    <!-- Modal pour le rapport détaillé -->
-    <div id="userReportModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-        <div class="relative top-20 mx-auto p-5 border w-4/5 shadow-lg rounded-md bg-white">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold" id="modalUserEmail"></h3>
-                <button onclick="closeModal()" class="text-gray-600 hover:text-gray-800">
-                    <span class="material-icons">close</span>
-                </button>
-            </div>
-            <div id="userDetailedReport" class="space-y-4">
-                <!-- Le contenu détaillé sera inséré ici -->
-            </div>
-        </div>
-    </div>
-
+    <!-- Material Icons for icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/script.js"></script>
     <script>
-        // Fonctions utilitaires
-        function getHighestLevel(levels) {
-            const levelOrder = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-            let highestLevel = 'A1';
-            
-            for (const level of levelOrder) {
-                if (levels[level] && hasPassedAnyCategory(levels[level].categories)) {
-                    highestLevel = level;
-                }
-            }
-            return highestLevel;
-        }
-
-        function hasPassedAnyCategory(categories) {
-            return Object.values(categories).some(cat => cat.validation);
-        }
-
-        function calculateTotalScore(levels) {
-            let totalAttempts = 0;
-            let totalValidated = 0;
-
-            Object.values(levels).forEach(level => {
-                Object.values(level.categories).forEach(category => {
-                    if (category.attempts > 0) {
-                        totalAttempts++;
-                        if (category.validation) {
-                            totalValidated++;
-                        }
-                    }
-                });
-            });
-
-            return totalAttempts ? Math.round((totalValidated / totalAttempts) * 100) : 0;
-        }
-
-        function updateStatistics(users) {
-            const regularUsers = users.filter(user => user.status === "user");
-            
-            document.getElementById('totalUsers').textContent = regularUsers.length;
-
-            const avgScore = regularUsers.reduce((acc, user) => 
-                acc + calculateTotalScore(user.levels), 0) / regularUsers.length;
-            document.getElementById('averageScore').textContent = 
-                `${Math.round(avgScore || 0)}%`;
-
-            const levels = ['C2', 'C1', 'B2', 'B1', 'A2', 'A1'];
-            const topLevel = levels.find(level => 
-                regularUsers.some(user => getHighestLevel(user.levels) === level)
-            ) || '-';
-            document.getElementById('topLevel').textContent = topLevel;
-        }
-
-        function renderScores() {
-            const users = JSON.parse(localStorage.getItem("users")) || [];
-            const searchQuery = document.getElementById('searchUser').value.toLowerCase();
-            const levelFilter = document.getElementById('levelFilter').value;
-
-            updateStatistics(users);
-
-            let filteredUsers = users.filter(user => 
-                user.status === "user" && 
-                user.email.toLowerCase().includes(searchQuery) &&
-                (levelFilter === 'all' || getHighestLevel(user.levels) === levelFilter)
-            );
-
-            document.getElementById('scoreTable').innerHTML = filteredUsers.map(user => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">${user.email}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            ${getHighestLevel(user.levels)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${calculateTotalScore(user.levels)}%
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <button onclick="showUserReport('${user.email}')" 
-                                class="text-blue-600 hover:text-blue-800">
-                            <span class="material-icons">visibility</span>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function showUserReport(userEmail) {
-            const users = JSON.parse(localStorage.getItem("users")) || [];
-            const user = users.find(u => u.email === userEmail);
-            
-            if (!user) return;
-
-            document.getElementById('modalUserEmail').textContent = userEmail;
-            
-            let reportHTML = '<div class="space-y-6">';
-            
-            Object.entries(user.levels).forEach(([level, levelData]) => {
-                reportHTML += `
-                    <div class="border rounded-lg p-4">
-                        <h4 class="text-lg font-bold mb-3">Niveau ${level}</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        `;
-                
-                Object.entries(levelData.categories).forEach(([category, data]) => {
-                    const validationStatus = data.validation 
-                        ? '<span class="text-green-600">Validé</span>' 
-                        : '<span class="text-red-600">Non validé</span>';
-                    
-                    reportHTML += `
-                        <div class="bg-gray-50 p-3 rounded">
-                            <h5 class="font-semibold">${category}</h5>
-                            <p>Tentatives: ${data.attempts}</p>
-                            <p>Statut: ${validationStatus}</p>
-                        </div>
-                    `;
-                });
-                
-                reportHTML += `
-                        </div>
-                    </div>
-                `;
-            });
-            
-            reportHTML += '</div>';
-            
-            document.getElementById('userDetailedReport').innerHTML = reportHTML;
-            document.getElementById('userReportModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('userReportModal').classList.add('hidden');
-        }
-
-        window.onclick = function(event) {
-            const modal = document.getElementById('userReportModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-
         function logout() {
-            localStorage.removeItem('userActuel');
-            window.location.href = 'index.html';
+            console.log("Logout function called"); // This will log to the console
+            localStorage.removeItem('user'); // Adjust the key as necessary
+            window.location.href = 'index.html'; // Change 'login.html' to your login page URL
         }
-
-        // Event listeners
-        document.getElementById('searchUser').addEventListener('input', renderScores);
-        document.getElementById('levelFilter').addEventListener('change', renderScores);
-        document.addEventListener('DOMContentLoaded', renderScores);
     </script>
 </body>
 </html>

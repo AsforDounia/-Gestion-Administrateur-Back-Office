@@ -1,45 +1,103 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistiques</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="tailwinsScript/script.js"></script>
+	<link rel="stylesheet" href="css/style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+	
+	
+
+	<!-- <script src="https://cdn.tailwindcss.com"></script> -->
+	<title>Document</title>
 </head>
-<body class="bg-gray-50">
-    <div class="container mx-auto p-4">
-        <div class="mb-6 flex gap-4">
-            <select id="nameFilter" class="border p-2 rounded">
-                <option value="all">Tous les utilisateurs</option>
-                <option value="fouad">Fouad</option>
-                <option value="ahmed">Ahmed</option>
-            </select>
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-[#143095] text-white">
+            <div class="p-4 text-lg font-semibold text-center">Admin Dashboard</div>
+            <nav class="mt-5">
+                <ul>
+                    <li>
+                        <li>
+                            <a href="admin.html" class="flex items-center p-4  bg-gray-700 hover:bg-gray-700">
+                                <span class="material-icons">dashboard</span>
+                                <span class="ml-2">Dashboard</span>
+                                
+                            </a>
+                        </li>
+                     
+                        </a></li>
+                    </li>
+                    <li>
+                        <a href="Résultats.html" class="flex items-center p-4 hover:bg-gray-700">
+                            <span class="material-icons">people</span>
+                            <span class="ml-2">Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="edite.html" class="flex items-center p-4 hover:bg-gray-700">
+                            <span class="material-icons">settings</span>
+                            <span class="ml-2">Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center p-4 hover:bg-gray-700" onclick="logout()">
+                            <span class="material-icons">logout</span>
+                            <span class="ml-2">Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
 
-            <select id="levelFilter" class="border p-2 rounded">
-                <option value="all">Tous les niveaux</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="B1">B1</option>
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-                <option value="C2">C2</option>
-            </select>
-        </div>
+        <div class="flex-1">
 
-        <table class="min-w-full bg-white shadow-md rounded">
-            <thead>
-                <tr class="bg-gray-100 border-b">
-                    <th class="p-2 text-left">Niveau</th>
-                    <th class="p-2 text-left">Tentatives</th>
-                    <th class="p-2 text-left">Progression</th>
-                    <th class="p-2 text-left">Taux de réussite</th>
-                </tr>
-            </thead>
-            <tbody id="statsTableBody">
-            </tbody>
-        </table>
+            <div class="container mx-auto p-4">
+                <div class="mb-6 flex gap-4">
+                    <select id="nameFilter" class="border p-2 rounded">
+                        <option value="all">Tous les utilisateurs</option>
+                        <option value="fouad">Fouad</option>
+                        <option value="ahmed">Ahmed</option>
+                    </select>
+        
+                    <select id="levelFilter" class="border p-2 rounded">
+                        <option value="all">Tous les niveaux</option>
+                        <option value="A1">A1</option>
+                        <option value="A2">A2</option>
+                        <option value="B1">B1</option>
+                        <option value="B2">B2</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                    </select>
+                </div>
+        
+                <table class="min-w-full bg-white shadow-md rounded">
+                    <thead>
+                        <tr class="bg-gray-100 border-b">
+                            <th class="p-2 text-left">Niveau</th>
+                            <th class="p-2 text-left">Tentatives</th>
+                            <th class="p-2 text-left">Progression</th>
+                            <th class="p-2 text-left">Taux de réussite</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        
+            <script src="statistique.js"></script>
     </div>
 
-    <script src="statistique.js"></script>
+    <!-- Material Icons for icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="js/script.js"></script>
+    <script>
+        function logout() {
+            console.log("Logout function called"); // This will log to the console
+            localStorage.removeItem('user'); // Adjust the key as necessary
+            window.location.href = 'index.html'; // Change 'login.html' to your login page URL
+        }
+    </script>
 </body>
 </html>
