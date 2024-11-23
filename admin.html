@@ -178,43 +178,52 @@
         }
 
         function renderScores() {
+            // Récupérer les données des utilisateurs et de leur progression
             const users = JSON.parse(localStorage.getItem("users")) || [];
+            const userProgress = JSON.parse(localStorage.getItem("userProgress")) || {};
+            
             const searchQuery = document.getElementById('searchUser').value.toLowerCase();
             const levelFilter = document.getElementById('levelFilter').value;
 
             updateStatistics(users);
 
+            // Filtrer les utilisateurs et inclure leur progression
             let filteredUsers = users.filter(user => 
                 user.status === "user" && 
                 user.email.toLowerCase().includes(searchQuery) &&
-                (levelFilter === 'all' || getHighestLevel(user.levels) === levelFilter)
+                (levelFilter === 'all' || getHighestLevel(userProgress[user.email] || {}) === levelFilter)
             );
 
-            document.getElementById('scoreTable').innerHTML = filteredUsers.map(user => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">${user.email}</div>
+            document.getElementById('scoreTable').innerHTML = filteredUsers.map(user => {
+                const userLevel = getHighestLevel(userProgress[user.email] || {});
+                const userScore = calculateTotalScore(userProgress[user.email] || {});
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${user.email}</div>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            ${getHighestLevel(user.levels)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${calculateTotalScore(user.levels)}%
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <button onclick="showUserReport('${user.email}')" 
-                                class="text-blue-600 hover:text-blue-800">
-                            <span class="material-icons">visibility</span>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                ${userLevel}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${userScore}%
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button onclick="showUserReport('${user.email}')" 
+                                    class="text-blue-600 hover:text-blue-800">
+                                <span class="material-icons">visibility</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function showUserReport(userEmail) {
@@ -223,26 +232,33 @@
             
             if (!user) return;
 
+            // Récupérer la progression de l'utilisateur
+            const userProgress = JSON.parse(localStorage.getItem('userProgress')) || {};
+            
             document.getElementById('modalUserEmail').textContent = userEmail;
             
             let reportHTML = '<div class="space-y-6">';
             
-            Object.entries(user.levels).forEach(([level, levelData]) => {
+            // Liste des niveaux et catégories
+            const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const categories = ['grammaire', 'vocabulaire', 'comprehension'];
+            
+            levels.forEach(level => {
                 reportHTML += `
                     <div class="border rounded-lg p-4">
                         <h4 class="text-lg font-bold mb-3">Niveau ${level}</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         `;
                 
-                Object.entries(levelData.categories).forEach(([category, data]) => {
-                    const validationStatus = data.validation 
-                        ? '<span class="text-green-600">Validé</span>' 
-                        : '<span class="text-red-600">Non validé</span>';
+                categories.forEach(category => {
+                    const isValidated = userProgress[level]?.[category] || false;
+                    const validationStatus = isValidated 
+                        ? '<span class="text-green-600">Validé ✓</span>' 
+                        : '<span class="text-red-600">Non validé ✗</span>';
                     
                     reportHTML += `
                         <div class="bg-gray-50 p-3 rounded">
                             <h5 class="font-semibold">${category}</h5>
-                            <p>Tentatives: ${data.attempts}</p>
                             <p>Statut: ${validationStatus}</p>
                         </div>
                     `;
